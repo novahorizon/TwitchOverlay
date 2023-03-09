@@ -8,7 +8,7 @@ const host = "127.0.0.1";
 const port = 8080;
 
 let main;
-fs.readFile(__dirname + "/test.html", 'utf8', (err, data) => {main = data;});
+fs.readFile(__dirname + "/overlay.html", 'utf8', (err, data) => {main = data;});
 // A simple dataSource that changes over time
 let dataSource = -100;
 // const updateDataSource = () => {
