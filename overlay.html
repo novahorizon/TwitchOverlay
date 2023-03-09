@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.js"></script>
+<script>
+    let fr = 10;
+    let clr;
+    let timer = 15.0;
+    let display_time = "";
+    let cs = 0;
+    function setup() {
+    createCanvas(400, 100);
+    frameRate(fr);
+    clr = color(255, 0, 0);
+    }
+
+    function draw() {
+    display_time = "";
+    background(256);
+    textSize(70);
+    fill(255, 30, 30);
+    timer -= deltaTime / 1000;
+    if (timer < -5)
+        display_time = "";
+    else if (timer <= 0)
+        display_time = "TIMES UP";
+    else {
+        if (timer > 3600)
+        display_time += Math.floor(timer / 3600).toString()+":";
+        if (timer > 60)
+        display_time += Math.floor((timer % 3600) / 60).toString()+":";
+        else
+        display_time = "";
+        display_time += (timer % 60).toFixed(1).padStart(4,'0');
+    }
+    text(display_time, 30, 70);
+    }
+
+
+    let sseSource = new EventSource("http://127.0.0.1:8080/chat");
+    sseSource.onmessage = function (event) {
+        console.log(event.data);
+        timer = JSON.parse(event.data).timer;
+    };
+    sseSource.onerror = function (event) { console.log(`error: ${event.data}`);}
+    sseSource.onopen = function (event) { console.log(`opened: ${event.data}`);}
+    
+    //const closeStream = () => sseSource.close(); // to be used as an event listener, e.g: a button in UI to close the stream.
+</script>
+
+
+</head>
+<body>
+</body>
+</html>
