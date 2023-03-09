@@ -6,9 +6,10 @@ var fs = require("fs");
 
 const host = "127.0.0.1";
 const port = 8080;
+const streamer = "" //left blank for Git
 
 let main;
-fs.readFile(__dirname + "/overlay.html", 'utf8', (err, data) => {main = data;});
+fs.readFile(__dirname + "/test.html", 'utf8', (err, data) => {main = data;});
 // A simple dataSource that changes over time
 let dataSource = -100;
 // const updateDataSource = () => {
@@ -52,7 +53,7 @@ server.listen(port, host, () => {
 const tmi = require('tmi.js');
 
 const client = new tmi.Client({
-	channels: [ 'novahorizon' ]
+	channels: [streamer]
 });
 
 client.connect();
