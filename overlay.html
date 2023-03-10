@@ -16,11 +16,13 @@
     createCanvas(400, 100);
     frameRate(fr);
     clr = color(255, 0, 0);
+    
     }
 
     function draw() {
     display_time = "";
-    background(0, 256, 0);
+    clear();
+    background('rgba(0,0,0,0)');
     textSize(70);
     fill(255, 30, 30);
     if (timer_active)
