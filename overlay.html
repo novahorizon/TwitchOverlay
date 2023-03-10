@@ -7,9 +7,11 @@
 <script>
     let fr = 10;
     let clr;
-    let timer = 15.0;
+    let timer_value = -20.0;
     let display_time = "";
     let cs = 0;
+    let timer_active = false;
+    let direction = 1;
     function setup() {
     createCanvas(400, 100);
     frameRate(fr);
@@ -21,21 +23,22 @@
     background(0, 256, 0);
     textSize(70);
     fill(255, 30, 30);
-    timer -= deltaTime / 1000;
-    if (timer < -5)
+    if (timer_active)
+        timer_value -= deltaTime / 1000 * direction;
+    if (timer_value < -15)
         display_time = "";
-    else if (timer <= 0)
+    else if (timer_value <= 0)
         display_time = "TIMES UP";
     else {
-        if (timer > 3600) {
-            display_time += Math.floor(timer / 3600).toString()+":";
-            display_time += Math.floor((timer % 3600) / 60).toFixed(0).padStart(2,'0').toString()+":";
+        if (timer_value > 3600) {
+            display_time += Math.floor(timer_value / 3600).toString()+":";
+            display_time += Math.floor((timer_value % 3600) / 60).toFixed(0).padStart(2,'0').toString()+":";
         }
-        else if (timer > 60)
-            display_time += Math.floor((timer % 3600) / 60).toString()+":";
+        else if (timer_value > 60)
+            display_time += Math.floor((timer_value % 3600) / 60).toString()+":";
         else
             display_time = "";
-        display_time += (timer % 60).toFixed(1).padStart(4,'0');
+        display_time += (timer_value % 60).toFixed(1).padStart(4,'0');
     }
     text(display_time, 30, 70);
     }
@@ -55,8 +58,31 @@
             });
         }
         ws.onmessage = (webSocketMessage) => {
-            const messageBody = JSON.parse(webSocketMessage.data);
-            timer = messageBody.timer;
+            const msg = JSON.parse(webSocketMessage.data);
+            console.log(`msg: ${msg.command} / ${msg.values}`);
+            if (["timer","stopwatch"].includes(msg.command)) {
+                if (msg.command == "timer")
+                    direction = 1;
+                else {
+                    direction = -1;
+                    if (timer_value <= 0)
+                        timer_value = .001;
+                }
+                if (Number.isFinite(parseFloat(msg.values[0]))) {
+                    timer_value = msg.values[0];
+                    timer_active = true;
+                }
+                else if (msg.values[0] == "set") {
+                    timer_value = parseFloat(msg.values[1]);
+                    timer_active = false;
+                }
+                else if (["start", "unpause", "begin", "unfreeze"].includes(msg.values[0]))
+                    timer_active = true;
+                else if (["cancel", "end", "remove", "destroy", "eliminate"].includes(msg.values[0]))
+                    timer_value = -20;
+                else
+                    timer_active = false;
+            }
         };
     })();
 
